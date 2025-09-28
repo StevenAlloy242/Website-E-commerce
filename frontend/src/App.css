@@ -1,3 +1,18 @@
+.shop-hero-btn {
+  background: #c41717;
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+}
+.shop-hero-btn:hover {
+  background: #a31212;
+}
 .App {
   text-align: center;
 }
@@ -26,6 +41,82 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.shop-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.shop-hero {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.shop-hero-img {
+  width: 400px;
+  border-radius: 20px;
+}
+.shop-hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+.shop-hero-content p {
+  font-size: 1.2rem;
+  color: #555;
+}
+.shop-products {
+  margin-top: 40px;
+}
+.shop-product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+.shop-product-item {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px;
+  text-align: center;
+}
+.shop-product-item img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.shop-product-item h3 {
+  font-size: 1rem;
+  margin: 10px 0 5px 0;
+}
+.shop-product-item p {
+  color: #c41717;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.shop-product-old {
+  color: #888;
+  text-decoration: line-through;
+  font-size: 0.9rem;
+}
+
+.shop-hero-title {
+  font-size: 3.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #222;
+}
+.shop-hero-hand {
+  width: 60px;
+  margin-bottom: 16px;
+}
+.shop-hero-desc {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 20px;
+  max-width: 350px;
 }
 
 @keyframes App-logo-spin {

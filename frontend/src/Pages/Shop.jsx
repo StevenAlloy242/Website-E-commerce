@@ -1,5 +1,5 @@
-
 import React from 'react';
+import './Shop.css';
 import hero_image from '../Components/Assets/hero_image.png';
 import hand_icon from '../Components/Assets/hand_icon.png';
 import all_product from '../Components/Assets/all_product.js';

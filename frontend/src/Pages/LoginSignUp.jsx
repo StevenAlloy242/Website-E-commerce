@@ -16,8 +16,8 @@ const LoginSignUp = () => {
       <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <input
-          type="email"
-          placeholder="Email"
+          type="Username"
+          placeholder="Username"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required

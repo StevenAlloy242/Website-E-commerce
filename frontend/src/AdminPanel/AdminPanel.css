@@ -1,0 +1,18 @@
+.admin-panel { display: flex; min-height: 100vh; background: #f7f7f7; }
+.admin-sidebar { width: 220px; background: #fff; box-shadow: 1px 0 8px #eee; padding: 32px 0; display: flex; flex-direction: column; align-items: center; }
+.admin-logo { font-weight: bold; font-size: 1.3rem; margin-bottom: 40px; text-align: center; }
+.admin-logo span { font-size: 1rem; color: #888; }
+.admin-sidebar button { width: 160px; margin-bottom: 18px; padding: 12px 0; border: none; background: #f5f5f5; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+.admin-sidebar button.active, .admin-sidebar button:hover { background: #e63e3e; color: #fff; }
+.admin-main { flex: 1; padding: 40px 0; display: flex; justify-content: center; align-items: flex-start; }
+.admin-product-list { width: 700px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #eee; padding: 32px; }
+.admin-product-list h2 { text-align: center; margin-bottom: 24px; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th, .admin-table td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: left; }
+.admin-table th { color: #888; font-size: 1rem; }
+.admin-table td img { display: block; }
+.admin-add-product { width: 400px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #eee; padding: 32px; }
+.admin-add-product h2 { text-align: center; margin-bottom: 24px; }
+.admin-form { display: flex; flex-direction: column; gap: 16px; }
+.admin-form input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+.admin-form button { padding: 12px 0; background: #e63e3e; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; }

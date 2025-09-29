@@ -23,12 +23,14 @@ const Shop = () => {
         <h2>All Products</h2>
         <div className="shop-product-list">
           {all_product.slice(0, 8).map((product) => (
-            <div key={product.id} className="shop-product-item">
-              <img src={product.image} alt={product.name} />
-              <h3>{product.name}</h3>
-              <p>Rp {product.new_price.toLocaleString()}</p>
-              <span className="shop-product-old">Rp {product.old_price.toLocaleString()}</span>
-            </div>
+            <a key={product.id} href={`/product/${product.id}`} style={{textDecoration:'none',color:'inherit'}}>
+              <div className="shop-product-item">
+                <img src={product.image} alt={product.name} />
+                <h3>{product.name}</h3>
+                <p>Rp {product.new_price.toLocaleString()}</p>
+                <span className="shop-product-old">Rp {product.old_price.toLocaleString()}</span>
+              </div>
+            </a>
           ))}
         </div>
       </div>

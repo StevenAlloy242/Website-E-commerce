@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import "./Navbar.css";
 import logo from "../Assets/logo.png";
 import cart_icon from "../Assets/cart_icon.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useCart } from '../../Context/CartContext';
 
 const Navbar = () => {
   const [menu, setMenu] = useState("shop");
+  const { getCartCount } = useCart();
+  const cartCount = getCartCount();
+  const location = useLocation();
 
   return (
-    <div className="navbar">
+    <div className="navbar navbar-custom">
       {/* Logo */}
       <div className="nav-logo">
         <img src={logo} alt="logo" />
@@ -17,33 +21,21 @@ const Navbar = () => {
 
       {/* Menu */}
       <ul className="nav-menu">
-        <li onClick={() => setMenu("shop")}>
-          <Link to="/">Shop</Link>
-          {menu === "shop" ? <hr /> : <></>}
-        </li>
-        <li onClick={() => setMenu("men")}>
-          <Link to="/men">Men</Link>
-          {menu === "men" ? <hr /> : <></>}
-        </li>
-        <li onClick={() => setMenu("women")}>
-          <Link to="/women">Women</Link>
-          {menu === "women" ? <hr /> : <></>}
-        </li>
-        <li onClick={() => setMenu("kids")}>
-          <Link to="/kids">Kids</Link>
-          {menu === "kids" ? <hr /> : <></>}
-        </li>
+        <li onClick={() => setMenu("shop")}> <Link to="/">Shop</Link> {menu === "shop" ? <hr /> : <></>} </li>
+        <li onClick={() => setMenu("men")}> <Link to="/men">Men</Link> {menu === "men" ? <hr /> : <></>} </li>
+        <li onClick={() => setMenu("women")}> <Link to="/women">Women</Link> {menu === "women" ? <hr /> : <></>} </li>
+        <li onClick={() => setMenu("kids")}> <Link to="/kids">Kids</Link> {menu === "kids" ? <hr /> : <></>} </li>
       </ul>
 
       {/* Cart + Login */}
-      <div className="nav-login-cart">
+      <div className="nav-login-cart" style={{position:'relative'}}>
         <Link to="/login">
           <button className="login-btn">Login</button>
         </Link>
         <Link to="/cart">
           <img src={cart_icon} alt="cart" />
         </Link>
-        <div className="nav-cart-count">0</div>
+        <div className="nav-cart-count">{cartCount}</div>
       </div>
     </div>
   );

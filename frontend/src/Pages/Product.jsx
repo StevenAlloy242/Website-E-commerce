@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useCart } from '../Context/CartContext';
 import { useParams } from "react-router-dom";
 import all_product from '../Components/Assets/all_product.js';
 
@@ -9,11 +10,18 @@ const Product = () => {
 	const { productId } = useParams();
 	const product = all_product.find(p => p.id === Number(productId));
 	const [selectedSize, setSelectedSize] = useState("");
+	const { addToCart } = useCart();
 
 	if (!product) return <div style={{padding:40}}>Product not found.</div>;
 
 	// Dummy gallery: gunakan gambar yang sama untuk contoh
 	const gallery = [product.image, product.image, product.image, product.image];
+
+	const handleAddToCart = () => {
+		if (selectedSize) {
+			addToCart(product.id, selectedSize, 1);
+		}
+	};
 
 	return (
 		<div style={{display:'flex',gap:40,alignItems:'flex-start',padding:'40px 0',maxWidth:1200,margin:'0 auto'}}>
@@ -43,7 +51,7 @@ const Product = () => {
 						))}
 					</div>
 				</div>
-				<button style={{padding:'14px 0',width:220,background:'#e63e3e',color:'#fff',border:'none',borderRadius:6,fontWeight:'bold',fontSize:'1rem',cursor:'pointer',marginBottom:18}}>ADD TO CART</button>
+				<button onClick={handleAddToCart} disabled={!selectedSize} style={{padding:'14px 0',width:220,background:!selectedSize?'#ccc':'#e63e3e',color:'#fff',border:'none',borderRadius:6,fontWeight:'bold',fontSize:'1rem',cursor:!selectedSize?'not-allowed':'pointer',marginBottom:18}}>ADD TO CART</button>
 				<div style={{marginBottom:8}}><b>Category:</b> {product.category === 'men' ? 'Men' : product.category === 'women' ? 'Women' : 'Kids'}, T-Shirt, Crop Top</div>
 				<div><b>Tags:</b> modern, latest</div>
 			</div>

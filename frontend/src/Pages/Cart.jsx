@@ -14,11 +14,11 @@ function Cart() {
   const shippingFee = 0;
   const total = subtotal + shippingFee;
 
-  const handleRemove = (productId) => {
-    removeFromCart(productId);
+  const handleRemove = (productId, size) => {
+    removeFromCart(productId, size);
   };
-  const handleQtyChange = (productId, qty) => {
-    updateQty(productId, qty);
+  const handleQtyChange = (productId, size, qty) => {
+    updateQty(productId, size, qty);
   };
 
   return (
@@ -28,6 +28,7 @@ function Cart() {
           <tr>
             <th>Products</th>
             <th>Title</th>
+            <th>Size</th>
             <th>Price</th>
             <th>Quantity</th>
             <th>Total</th>
@@ -36,7 +37,7 @@ function Cart() {
         </thead>
         <tbody>
           {cartItems.map(item => (
-            <CartItem key={item.productId} item={item} onRemove={handleRemove} onQtyChange={handleQtyChange} />
+            <CartItem key={item.productId + '-' + item.size} item={item} onRemove={handleRemove} onQtyChange={handleQtyChange} />
           ))}
         </tbody>
       </table>

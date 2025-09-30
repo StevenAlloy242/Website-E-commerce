@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './Shop.css';
 import hero_image from '../Components/Assets/hero_image.png';
 import hand_icon from '../Components/Assets/hand_icon.png';
@@ -7,9 +8,8 @@ const Shop = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
-      .then(res => res.json())
-      .then(data => setProducts(data))
+    axios.get('http://localhost:5000/api/products')
+      .then(res => setProducts(res.data))
       .catch(err => console.error('Error fetching products:', err));
   }, []);
 

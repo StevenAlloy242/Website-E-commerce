@@ -6,8 +6,17 @@ import { useCart } from '../Context/CartContext';
 function Cart() {
   const { cart, updateQty, removeFromCart } = useCart();
   const [promo, setPromo] = useState("");
+
+  const getAllProducts = () => {
+    const localProducts = localStorage.getItem('products');
+    const local = localProducts ? JSON.parse(localProducts) : [];
+    return [...all_product, ...local];
+  };
+
+  const allProducts = getAllProducts();
+
   const cartItems = cart.map(item => {
-    const product = all_product.find(p => p.id === item.productId);
+    const product = allProducts.find(p => p.id === item.productId);
     return { ...item, ...product };
   });
   const subtotal = cartItems.reduce((sum, item) => sum + item.new_price * item.qty, 0);

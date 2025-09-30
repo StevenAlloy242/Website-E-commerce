@@ -1,15 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import logo from "../Assets/logo.png";
 import cart_icon from "../Assets/cart_icon.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from '../../Context/CartContext';
 
 const Navbar = () => {
   const [menu, setMenu] = useState("shop");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState("");
   const { getCartCount } = useCart();
   const cartCount = getCartCount();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loggedIn = sessionStorage.getItem('userLoggedIn') === 'true';
+    const user = sessionStorage.getItem('currentUser') || '';
+    setIsLoggedIn(loggedIn);
+    setCurrentUser(user);
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('userLoggedIn');
+    sessionStorage.removeItem('currentUser');
+    setIsLoggedIn(false);
+    setCurrentUser('');
+    navigate('/');
+  };
 
   return (
     <div className="navbar navbar-custom">
@@ -29,9 +47,16 @@ const Navbar = () => {
 
       {/* Cart + Login */}
       <div className="nav-login-cart" style={{position:'relative'}}>
-        <Link to="/login">
-          <button className="login-btn">Login</button>
-        </Link>
+        {isLoggedIn ? (
+          <div className="user-info">
+            <span>Welcome, {currentUser}</span>
+            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          </div>
+        ) : (
+          <Link to="/login">
+            <button className="login-btn">Login</button>
+          </Link>
+        )}
         <Link to="/cart">
           <img src={cart_icon} alt="cart" />
         </Link>

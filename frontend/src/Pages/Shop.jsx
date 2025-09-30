@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Shop.css';
 import hero_image from '../Components/Assets/hero_image.png';
 import hand_icon from '../Components/Assets/hand_icon.png';
-import all_product from '../Components/Assets/all_product.js';
 
 const Shop = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error('Error fetching products:', err));
+  }, []);
+
   return (
     <div className="shop-container">
       {/* Hero Section */}
@@ -22,7 +30,7 @@ const Shop = () => {
       <div className="shop-products">
         <h2>All Products</h2>
         <div className="shop-product-list">
-          {all_product.slice(0, 8).map((product) => (
+          {products.slice(0, 8).map((product) => (
             <a key={product.id} href={`/product/${product.id}`} style={{textDecoration:'none',color:'inherit'}}>
               <div className="shop-product-item">
                 <img src={product.image} alt={product.name} />

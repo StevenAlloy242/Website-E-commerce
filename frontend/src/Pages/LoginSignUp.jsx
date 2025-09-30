@@ -1,46 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './AdminPanel.css'; // Assuming same CSS
+
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "admin123";
 
 const LoginSignUp = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+      navigate('/admin-panel');
+    }
+  }, [navigate]);
+
+  const handleSubmit = e => {
     e.preventDefault();
-    // Simulasi login/signup
-    alert(`${isLogin ? 'Login' : 'Sign Up'} berhasil untuk email: ${email}`);
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+      sessionStorage.setItem('isLoggedIn', 'true');
+      navigate('/admin-panel');
+    } else {
+      setError("Username atau password salah!");
+    }
   };
 
   return (
-    <div className="shop-category" style={{ maxWidth: 400, margin: '40px auto', background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', padding: 32 }}>
-      <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <input
-          type="Username"
-          placeholder="Username"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc' }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc' }}
-        />
-        <button type="submit" className="shop-hero-btn">{isLogin ? 'Login' : 'Sign Up'}</button>
+    <div className="admin-login-page">
+      <form className="admin-login-form" onSubmit={handleSubmit}>
+        <h2>Admin Login</h2>
+        <label htmlFor="admin-username">Masukkan Username</label>
+        <input id="admin-username" type="text" placeholder="Masukkan Username" value={username} onChange={e => setUsername(e.target.value)} required />
+        <label htmlFor="admin-password">Masukkan Password</label>
+        <input id="admin-password" type="password" placeholder="Masukkan Password" value={password} onChange={e => setPassword(e.target.value)} required />
+        {error && <div className="admin-login-error">{error}</div>}
+        <button type="submit">Login</button>
       </form>
-      <p style={{ marginTop: 16 }}>
-        {isLogin ? 'Belum punya akun?' : 'Sudah punya akun?'}{' '}
-        <button type="button" style={{ background: 'none', border: 'none', color: '#c41717', cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }} onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Sign Up' : 'Login'}
-        </button>
-      </p>
     </div>
   );
-}
+};
 
 export default LoginSignUp;

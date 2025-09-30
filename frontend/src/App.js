@@ -1,11 +1,12 @@
 import './App.css';
 import Navbar from './Components/Navbar/Navbar';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Shop from './Pages/Shop.jsx';
 import ShopCategory from './Pages/ShopCategory';
 import Product from './Pages/Product';
 import Cart from './Pages/Cart';
 import LoginSignUp from './Pages/LoginSignUp';
+import AdminPanel from './Pages/AdminPanel';
 
 
 
@@ -22,6 +23,7 @@ function App() {
           <Route path='/product/:productId' element={<Product />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/login' element={<LoginSignUp />} />
+          <Route path='/admin-panel' element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
     </div>

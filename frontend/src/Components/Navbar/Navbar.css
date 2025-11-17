@@ -42,7 +42,9 @@
   position: relative;
 }
 
-.login-btn {
+.login-btn,
+.seller-btn,
+.logout-btn {
   padding: 8px 30px;
   border: none;
   border-radius: 30px;
@@ -54,8 +56,37 @@
   transition: background 0.2s ease;
 }
 
-.login-btn:hover {
+.login-btn:hover,
+.seller-btn:hover,
+.logout-btn:hover {
   background-color: #c41717;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.user-info span {
+  color: #333;
+  font-weight: 500;
+}
+
+.seller-btn {
+  background-color: #4CAF50;
+  padding: 6px 15px;
+  font-size: 12px;
+}
+
+.seller-btn:hover {
+  background-color: #45a049;
+}
+
+.logout-btn {
+  padding: 6px 15px;
+  font-size: 12px;
 }
 
 .nav-login-cart img {

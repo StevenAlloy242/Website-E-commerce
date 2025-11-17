@@ -1,9 +1,3 @@
-# TODO: Implement Session Storage Auth Protection
-
-- [x] Modify frontend/src/Pages/AdminPanel.jsx:
-  - Add useEffect to check sessionStorage for 'isLoggedIn' on component mount.
-  - If sessionStorage.getItem('isLoggedIn') !== 'true', navigate to '/login'.
-
 # TODO: Implement User Authentication
 
 - [x] Modify frontend/src/Pages/LoginSignUp.jsx:
@@ -26,32 +20,9 @@
   - Add edit and delete functionality.
 - [ ] Update product data source (e.g., all_product.js or API).
 
-# TODO: Implement Discount System
-
-- [x] Update frontend/src/Pages/AddDiscount.jsx:
-  - Implement adding discounts to products.
-- [x] Update frontend/src/Pages/DiscountList.jsx:
-  - Display and manage discounts.
-
-# TODO: Implement Cart Functionality
-
-- [x] Update frontend/src/Pages/Cart.jsx:
-  - Ensure cart items are displayed correctly.
-  - Implement remove items, update quantities.
-- [x] Update CartContext.js:
-  - Ensure add to cart, remove, etc., work properly.
-
-# TODO: Implement Shop and Product Pages
-
-- [x] Update frontend/src/Pages/Shop.jsx:
-  - Display products from data.
-- [x] Update frontend/src/Pages/ShopCategory.jsx:
-  - Filter products by category.
-- [x] Update frontend/src/Pages/Product.jsx:
-  - Display product details.
-
 # TODO: Implement Backend
 
-- [ ] Set up backend server (e.g., Node.js/Express or Python/Flask).
-- [ ] Implement API endpoints for products, users, cart, etc.
+- [x] Set up backend server with Node.js/Express and MySQL.
+- [x] Implement API endpoints for products (CRUD).
 - [ ] Connect frontend to backend APIs.
+- [ ] Implement API endpoints for users, cart, etc.

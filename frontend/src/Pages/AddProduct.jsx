@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../Context/AuthContext";
 import "./AdminPanel.css";
 
 const AddProduct = () => {
@@ -9,9 +10,10 @@ const AddProduct = () => {
   const [image, setImage] = useState("");
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const { authToken } = useAuth();
 
   useEffect(() => {
-    const editingProduct = localStorage.getItem('editingProduct');
+    const editingProduct = sessionStorage.getItem('editingProduct');
     if (editingProduct) {
       const product = JSON.parse(editingProduct);
       setName(product.name);
@@ -24,49 +26,63 @@ const AddProduct = () => {
     }
   }, []);
 
-  const getProducts = () => {
-    const products = localStorage.getItem('products');
-    return products ? JSON.parse(products) : [];
-  };
-
-  const saveProducts = (products) => {
-    localStorage.setItem('products', JSON.stringify(products));
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    const products = getProducts();
-    if (editing) {
-      const index = products.findIndex(p => p.id === editingId);
-      if (index !== -1) {
-        products[index] = {
-          id: editingId,
-          name,
-          old_price: parseFloat(oldPrice),
-          new_price: parseFloat(newPrice),
-          category,
-          image,
-          added: true
-        };
-      }
-      localStorage.removeItem('editingProduct');
-      setEditing(false);
-      setEditingId(null);
-    } else {
-      const newProduct = {
-        id: Date.now(),
-        name,
-        old_price: parseFloat(oldPrice),
-        new_price: parseFloat(newPrice),
-        category,
-        image,
-        added: true
-      };
-      products.push(newProduct);
-    }
-    saveProducts(products);
-    alert(editing ? "Product updated!" : "Product added!");
+  const clearForm = () => {
     setName(""); setOldPrice(""); setNewPrice(""); setCategory(""); setImage("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = authToken;
+    if (!token) return alert('Anda harus login terlebih dahulu');
+
+    const payload = {
+      name,
+      old_price: parseFloat(oldPrice),
+      new_price: parseFloat(newPrice),
+      category,
+      image
+    };
+
+    try {
+      if (editing) {
+        const res = await fetch(`/api/products/${editingId}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          alert(d.message || 'Gagal mengupdate produk');
+        } else {
+          alert('Product updated!');
+          sessionStorage.removeItem('editingProduct');
+          setEditing(false);
+          setEditingId(null);
+          clearForm();
+        }
+      } else {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          alert(d.message || 'Gagal menambah produk');
+        } else {
+          alert('Product added!');
+          clearForm();
+        }
+      }
+    } catch (err) {
+      alert('Gagal menghubungi server');
+    }
   };
 
   return (

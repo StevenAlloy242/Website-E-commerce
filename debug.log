@@ -1,0 +1,29 @@
+
+> website-e-commerce@1.0.0 dev
+> concurrently "npm run dev --prefix backend" "npm start --prefix frontend"
+
+(node:9980) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[0] 
+[0] > ecommerce-backend@1.0.0 dev
+[0] > nodemon src/index.js
+[0] 
+[0] [33m[nodemon] 3.1.10[39m
+[0] [33m[nodemon] to restart at any time, enter `rs`[39m
+[0] [33m[nodemon] watching path(s): *.*[39m
+[0] [33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[0] [32m[nodemon] starting `node src/index.js`[39m
+[1] npm error Missing script: "start"
+[1] npm error
+[1] npm error Did you mean one of these?
+[1] npm error   npm star # Mark your favorite packages
+[1] npm error   npm stars # View packages marked as favorites
+[1] npm error
+[1] npm error To see a list of scripts, run:
+[1] npm error   npm run
+[1] npm error A complete log of this run can be found in: C:\Users\USER\AppData\Local\npm-cache\_logs\2025-11-12T14_30_06_228Z-debug-0.log
+[1] npm start --prefix frontend exited with code 1
+[0] Server running on http://localhost:5000
+[0] [32m[nodemon] restarting child process[39m
+[0] [32m[nodemon] starting `node src/index.js`[39m
+[0] npm run dev --prefix backend exited with code 3221225786

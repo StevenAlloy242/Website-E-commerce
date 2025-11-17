@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import all_product from '../Components/Assets/all_product.js';
+import all_product from '../Components/Assets/all_product.jsx';
 import CartItem from '../Components/Cart/CartItem';
 import { useCart } from '../Context/CartContext';
 

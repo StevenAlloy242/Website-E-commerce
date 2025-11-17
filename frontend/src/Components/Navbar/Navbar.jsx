@@ -4,28 +4,18 @@ import logo from "../Assets/logo.png";
 import cart_icon from "../Assets/cart_icon.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from '../../Context/CartContext';
+import { useAuth } from '../../Context/AuthContext';
 
 const Navbar = () => {
   const [menu, setMenu] = useState("shop");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState("");
   const { getCartCount } = useCart();
+  const { isLoggedIn, currentUser, currentRole, logout } = useAuth();
   const cartCount = getCartCount();
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loggedIn = sessionStorage.getItem('userLoggedIn') === 'true';
-    const user = sessionStorage.getItem('currentUser') || '';
-    setIsLoggedIn(loggedIn);
-    setCurrentUser(user);
-  }, []);
-
   const handleLogout = () => {
-    sessionStorage.removeItem('userLoggedIn');
-    sessionStorage.removeItem('currentUser');
-    setIsLoggedIn(false);
-    setCurrentUser('');
+    logout();
     navigate('/');
   };
 
@@ -50,6 +40,11 @@ const Navbar = () => {
         {isLoggedIn ? (
           <div className="user-info">
             <span>Welcome, {currentUser}</span>
+            {currentRole === 'admin' && (
+              <Link to="/admin-panel">
+                <button className="seller-btn">Seller Panel</button>
+              </Link>
+            )}
             <button onClick={handleLogout} className="logout-btn">Logout</button>
           </div>
         ) : (

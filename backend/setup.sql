@@ -30,5 +30,5 @@ CREATE TABLE IF NOT EXISTS users (
 -- Insert default admin user (username: admin, password: admin123 - hashed with bcrypt)
 -- Password hash: $2b$10$aMO.FeGWpLRvJXxJpLbxE.GhL6GvSCWDXh3LGmMuVQPlmCKvPqaHu (bcrypt hash of 'admin123')
 INSERT INTO users (username, password, role) VALUES
-('admin', '$2b$10$aMO.FeGWpLRvJXxJpLbxE.GhL6GvSCWDXh3LGmMuVQPlmCKvPqaHu', 'admin')
+('admin', 'admin123', 'admin')
 ON DUPLICATE KEY UPDATE username = username;

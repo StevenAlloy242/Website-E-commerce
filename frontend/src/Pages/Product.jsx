@@ -12,7 +12,7 @@ const Product = () => {
 	const [selectedSize, setSelectedSize] = useState("");
 	const { addToCart } = useCart();
 
-	if (!product) return <div style={{padding:40}}>Product not found.</div>;
+		if (!product) return <div style={{padding:40}}>Product not found.</div>;
 
 	// Dummy gallery: gunakan gambar yang sama untuk contoh
 	const gallery = [product.image, product.image, product.image, product.image];

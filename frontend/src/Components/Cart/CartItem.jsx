@@ -1,11 +1,12 @@
 import React from "react";
 import cart_cross_icon from "../Assets/cart_cross_icon.png";
+import { getLocalImage } from "../../utils/imageMapper";
 
 const CartItem = ({ item, onRemove, onQtyChange }) => {
   return (
     <tr className="cart-item-row">
       <td className="cart-item-img-cell">
-        <img src={item.image} alt={item.name} className="cart-item-img" />
+        <img src={getLocalImage(item)} alt={item.name} className="cart-item-img" />
       </td>
       <td className="cart-item-title">{item.name}</td>
       <td className="cart-item-size">{item.size}</td>

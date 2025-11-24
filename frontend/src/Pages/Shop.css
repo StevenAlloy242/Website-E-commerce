@@ -1,0 +1,62 @@
+/* Card-specific styling only. Do NOT change layout or positioning rules. */
+.shop-product-item {
+	padding: 10px;
+	background: #ffffff;
+	border-radius: 8px;
+	transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.shop-product-item:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.shop-product-img {
+	width: 100%;
+	height: 220px;
+	object-fit: cover;
+	border-radius: 6px;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.shop-product-item h3 {
+	font-size: 0.98rem;
+	font-weight: 600;
+	color: #222;
+	margin: 6px 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.shop-product-item p {
+	font-size: 1rem;
+	color: #e63e3e;
+	margin: 4px 0 2px 0;
+	font-weight: 600;
+}
+
+.shop-product-old {
+	font-size: 0.85rem;
+	color: #999;
+	text-decoration: line-through;
+}
+
+.shop-product-stock {
+	font-size: 0.80rem;
+	color: #666;
+	margin: 4px 0;
+	font-weight: 500;
+}
+
+.shop-product-stock.low {
+	color: #ff6b6b;
+	font-weight: 600;
+}
+
+.shop-product-stock.out {
+	color: #d63031;
+	font-weight: 700;
+}
+

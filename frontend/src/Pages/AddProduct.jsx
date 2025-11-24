@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
 import "./AdminPanel.css";
+import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
   const [name, setName] = useState("");
@@ -8,9 +9,11 @@ const AddProduct = () => {
   const [newPrice, setNewPrice] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [stock, setStock] = useState(0);
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const { authToken } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const editingProduct = sessionStorage.getItem('editingProduct');
@@ -21,6 +24,7 @@ const AddProduct = () => {
       setNewPrice(product.new_price);
       setCategory(product.category);
       setImage(product.image);
+      setStock(product.stock ?? 0);
       setEditing(true);
       setEditingId(product.id);
     }
@@ -40,7 +44,8 @@ const AddProduct = () => {
       old_price: parseFloat(oldPrice),
       new_price: parseFloat(newPrice),
       category,
-      image
+      image,
+      stock: parseInt(stock || 0)
     };
 
     try {
@@ -62,6 +67,9 @@ const AddProduct = () => {
           setEditing(false);
           setEditingId(null);
           clearForm();
+          // go back to admin panel list
+          try { window.dispatchEvent(new Event('app:afterEdit')); } catch(e) {}
+          navigate('/admin-panel');
         }
       } else {
         const res = await fetch('/api/products', {
@@ -85,6 +93,14 @@ const AddProduct = () => {
     }
   };
 
+  const handleCancel = () => {
+    sessionStorage.removeItem('editingProduct');
+    setEditing(false);
+    setEditingId(null);
+    clearForm();
+    navigate('/admin-panel');
+  };
+
   return (
     <div className="admin-add-product">
       <h2>{editing ? "Edit Product" : "Add Product"}</h2>
@@ -94,7 +110,11 @@ const AddProduct = () => {
         <input type="number" placeholder="New Price" value={newPrice} onChange={e=>setNewPrice(e.target.value)} required />
         <input type="text" placeholder="Category" value={category} onChange={e=>setCategory(e.target.value)} required />
         <input type="text" placeholder="Image URL" value={image} onChange={e=>setImage(e.target.value)} required />
-        <button type="submit">{editing ? "Update Product" : "Add Product"}</button>
+        <input type="number" placeholder="Stock" value={stock} onChange={e=>setStock(e.target.value)} />
+        <div style={{display:'flex',gap:8}}>
+          <button type="submit">{editing ? "Update Product" : "Add Product"}</button>
+          {editing && <button type="button" onClick={handleCancel} style={{background:'#ccc'}}>Cancel</button>}
+        </div>
       </form>
     </div>
   );

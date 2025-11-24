@@ -5,12 +5,24 @@ import { verifyToken, verifyTokenOptional } from "../middleware/auth.js";
 const router = Router();
 
 // GET /api/products -> list semua produk (include owner username)
-router.get("/", verifyTokenOptional, async (_req, res) => {
+// Query param: ?owner=me -> filter: show public products + user's own products only
+router.get("/", verifyTokenOptional, async (req, res) => {
   try {
-    console.log("DEBUG: GET /products called");
-    const [rows] = await pool.query(
-      `SELECT p.*, u.username as owner_username FROM products p LEFT JOIN users u ON p.owner_id = u.id ORDER BY p.id DESC`
-    );
+    console.log("DEBUG: GET /products called, owner param:", req.query.owner);
+    let query = `SELECT p.*, u.username as owner_username FROM products p LEFT JOIN users u ON p.owner_id = u.id`;
+    let params = [];
+
+    // If owner=me, filter: show public (owner_id IS NULL) + user's own products
+    if (req.query.owner === "me") {
+      if (!req.userId) {
+        return res.status(401).json({ message: "Anda harus login untuk melihat produk Anda" });
+      }
+      query += ` WHERE (p.owner_id IS NULL OR p.owner_id = ?)`;
+      params.push(req.userId);
+    }
+
+    query += ` ORDER BY p.id DESC`;
+    const [rows] = await pool.query(query, params);
     console.log("DEBUG: Query successful, rows:", rows.length);
     res.json(rows);
   } catch (err) {
@@ -40,15 +52,16 @@ router.get("/:id", verifyTokenOptional, async (req, res) => {
 
 // POST /api/products -> tambah produk (requires auth)
 router.post("/", verifyToken, async (req, res) => {
-  const { name, category, new_price, old_price, image } = req.body;
+  const { name, category, new_price, old_price, image, stock } = req.body;
   if (!name || !category || !new_price) {
     return res.status(400).json({ message: "name, category, new_price wajib diisi" });
   }
   try {
     const ownerId = req.userId; // dari JWT token
+    const stockValue = stock !== undefined ? parseInt(stock) : 0;
     const [result] = await pool.query(
-      "INSERT INTO products (name, category, new_price, old_price, image, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
-      [name, category, new_price, old_price || null, image || null, ownerId]
+      "INSERT INTO products (name, category, new_price, old_price, image, owner_id, stock) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [name, category, new_price, old_price || null, image || null, ownerId, stockValue]
     );
     const [rows] = await pool.query(
       `SELECT p.*, u.username as owner_username FROM products p LEFT JOIN users u ON p.owner_id = u.id WHERE p.id = ?`,
@@ -64,7 +77,7 @@ router.post("/", verifyToken, async (req, res) => {
 
 // PUT /api/products/:id -> update produk (requires auth)
 router.put("/:id", verifyToken, async (req, res) => {
-  const { name, category, new_price, old_price, image } = req.body;
+  const { name, category, new_price, old_price, image, stock } = req.body;
   try {
     const [exists] = await pool.query(
       `SELECT * FROM products WHERE id = ?`,
@@ -79,14 +92,16 @@ router.put("/:id", verifyToken, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to edit this product' });
     }
 
+    const stockValue = stock !== undefined ? parseInt(stock) : exists[0].stock;
     await pool.query(
-      "UPDATE products SET name = ?, category = ?, new_price = ?, old_price = ?, image = ? WHERE id = ?",
+      "UPDATE products SET name = ?, category = ?, new_price = ?, old_price = ?, image = ?, stock = ? WHERE id = ?",
       [
         name ?? exists[0].name,
         category ?? exists[0].category,
         new_price ?? exists[0].new_price,
         old_price ?? exists[0].old_price,
         image ?? exists[0].image,
+        stockValue,
         req.params.id,
       ]
     );

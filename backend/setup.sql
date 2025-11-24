@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   role ENUM('buyer','admin') NOT NULL DEFAULT 'buyer',
   balance DECIMAL(10,2) DEFAULT 0,
+  cart LONGTEXT NULL,
+  notifications LONGTEXT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

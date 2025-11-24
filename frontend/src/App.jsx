@@ -7,6 +7,7 @@ import Product from './Pages/Product';
 import Cart from './Pages/Cart';
 import LoginSignUp from './Pages/LoginSignUp';
 import AdminPanel from './Pages/AdminPanel';
+import BuyerPanel from './Pages/BuyerPanel';
 
 
 
@@ -24,6 +25,7 @@ function App() {
           <Route path='/cart' element={<Cart />} />
           <Route path='/login' element={<LoginSignUp />} />
           <Route path='/admin-panel' element={<AdminPanel />} />
+          <Route path='/buyer-panel' element={<BuyerPanel />} />
         </Routes>
       </BrowserRouter>
     </div>

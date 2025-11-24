@@ -58,6 +58,9 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('currentRole');
     sessionStorage.removeItem('userLoggedIn');
     sessionStorage.removeItem('currentBalance');
+    // Also clear local cart and notify other parts of app about logout
+    try { localStorage.removeItem('cart'); } catch (e) {}
+    try { window.dispatchEvent(new Event('app:logout')); } catch (e) {}
   };
 
   // refresh profile (fetch balance + username/role) from backend

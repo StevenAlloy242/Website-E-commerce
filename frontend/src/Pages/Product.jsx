@@ -1,23 +1,43 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from '../Context/CartContext';
 import { useParams } from "react-router-dom";
-import all_product from '../Components/Assets/all_product.jsx';
+import { getLocalImage } from '../utils/imageMapper';
 
 const sizes = ["S", "M", "L", "XL", "XXL"];
 
 const Product = () => {
-	const { productId } = useParams();
-	const product = all_product.find(p => p.id === Number(productId));
-	const [selectedSize, setSelectedSize] = useState("");
-	const { addToCart } = useCart();
+		const { productId } = useParams();
+		const [product, setProduct] = useState(null);
+		const [selectedSize, setSelectedSize] = useState("");
+		const { addToCart } = useCart();
+
+		useEffect(() => {
+			const load = async () => {
+				try {
+					const res = await fetch(`/api/products/${productId}`);
+					if (!res.ok) return setProduct(null);
+					const data = await res.json();
+					setProduct(data);
+				} catch (e) {
+					console.error('Failed to load product', e);
+					setProduct(null);
+				}
+			};
+			load();
+		}, [productId]);
 
 		if (!product) return <div style={{padding:40}}>Product not found.</div>;
 
-	// Dummy gallery: gunakan gambar yang sama untuk contoh
-	const gallery = [product.image, product.image, product.image, product.image];
+		// Dummy gallery: gunakan gambar yang sama untuk contoh
+		const localImage = getLocalImage(product);
+		const gallery = [localImage, localImage, localImage, localImage];
 
 	const handleAddToCart = () => {
+		if (!product || (product.stock !== undefined && Number(product.stock) <= 0)) {
+			alert('Product is out of stock');
+			return;
+		}
 		if (selectedSize) {
 			addToCart(product.id, selectedSize, 1);
 		}
@@ -32,7 +52,7 @@ const Product = () => {
 				))}
 			</div>
 			{/* Main Image */}
-			<img src={product.image} alt={product.name} style={{width:340,height:400,objectFit:'cover',borderRadius:16,boxShadow:'0 2px 12px rgba(0,0,0,0.08)'}} />
+			<img src={localImage} alt={product.name} style={{width:340,height:400,objectFit:'cover',borderRadius:16,boxShadow:'0 2px 12px rgba(0,0,0,0.08)'}} />
 			{/* Info */}
 			<div style={{flex:1}}>
 				<h2 style={{fontSize:'2rem',marginBottom:12}}>{product.name}</h2>
@@ -42,6 +62,7 @@ const Product = () => {
 					<span style={{color:'#f5a623',fontWeight:'bold'}}>★★★★★</span>
 					<span style={{color:'#888',fontSize:'0.95rem'}}>(122)</span>
 				</div>
+				<div style={{marginBottom:8,fontWeight:'600'}}>Stok: {product.stock ?? 0}</div>
 				<p style={{color:'#555',marginBottom:18}}>A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.</p>
 				<div style={{marginBottom:18}}>
 					<span style={{fontWeight:'bold'}}>Select Size</span>
@@ -51,7 +72,9 @@ const Product = () => {
 						))}
 					</div>
 				</div>
-				<button onClick={handleAddToCart} disabled={!selectedSize} style={{padding:'14px 0',width:220,background:!selectedSize?'#ccc':'#e63e3e',color:'#fff',border:'none',borderRadius:6,fontWeight:'bold',fontSize:'1rem',cursor:!selectedSize?'not-allowed':'pointer',marginBottom:18}}>ADD TO CART</button>
+				<button onClick={handleAddToCart} disabled={!selectedSize || (product && product.stock !== undefined && Number(product.stock) <= 0)} style={{padding:'14px 0',width:220,background:(!selectedSize || (product && product.stock !== undefined && Number(product.stock) <= 0))? '#ccc':'#e63e3e',color:'#fff',border:'none',borderRadius:6,fontWeight:'bold',fontSize:'1rem',cursor:(!selectedSize || (product && product.stock !== undefined && Number(product.stock) <= 0))?'not-allowed':'pointer',marginBottom:18}}>
+				{(product && product.stock !== undefined && Number(product.stock) <= 0) ? 'OUT OF STOCK' : (selectedSize ? 'ADD TO CART' : 'SELECT SIZE')}
+				</button>
 				<div style={{marginBottom:8}}><b>Category:</b> {product.category === 'men' ? 'Men' : product.category === 'women' ? 'Women' : 'Kids'}, T-Shirt, Crop Top</div>
 				<div><b>Tags:</b> modern, latest</div>
 			</div>

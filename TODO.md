@@ -26,3 +26,8 @@
 - [x] Implement API endpoints for products (CRUD).
 - [ ] Connect frontend to backend APIs.
 - [ ] Implement API endpoints for users, cart, etc.
+
+# TODO: Kekurangan
+- stock barang(database)
+- yang edit di seller panel akan kelempar ke tujuan
+- css gambar di shop

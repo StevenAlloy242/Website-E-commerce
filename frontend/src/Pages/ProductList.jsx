@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import "./AdminPanel.css";
+import { getLocalImage } from "../utils/imageMapper";
+import { useNavigate } from 'react-router-dom';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -10,13 +12,16 @@ const ProductList = () => {
   const username = currentUser;
   const role = currentRole || 'buyer';
   const token = authToken;
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
       setError(null);
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       console.log('Fetching products with headers:', headers);
-      const res = await fetch('/api/products', { headers });
+      // Admin sees all products, regular users see only their own
+      const url = role === 'admin' ? '/api/products' : '/api/products?owner=me';
+      const res = await fetch(url, { headers });
       console.log('Products response status:', res.status);
       
       if (!res.ok) {
@@ -63,7 +68,10 @@ const ProductList = () => {
 
   const handleEdit = (product) => {
     sessionStorage.setItem('editingProduct', JSON.stringify(product));
-    alert("Go to Add Product page to edit this product.");
+    // Dispatch event so AdminPanel (if open) can switch to Add (edit) mode immediately
+    try { window.dispatchEvent(new Event('app:openAddProduct')); } catch (e) {}
+    // Navigate to admin panel where AddProduct form will read editingProduct
+    navigate('/admin-panel');
   };
 
   if (loading) return <div style={{padding: '20px'}}>Loading products...</div>;
@@ -82,6 +90,7 @@ const ProductList = () => {
               <th>Title</th>
               <th>Old Price</th>
               <th>New Price</th>
+              <th>Stock</th>
               <th>Category</th>
               <th>Owner</th>
               <th>Edit</th>
@@ -91,12 +100,13 @@ const ProductList = () => {
           <tbody>
             {products.map(product => (
               <tr key={product.id}>
-                <td><img src={product.image} alt={product.name} style={{width:60,borderRadius:8}} /></td>
+                <td><img src={getLocalImage(product)} alt={product.name} style={{width:60,borderRadius:8}} /></td>
                 <td>{product.name}</td>
                 <td>${product.old_price}</td>
                 <td>${product.new_price}</td>
+                <td style={{fontWeight: 'bold', color: (product.stock || 0) === 0 ? '#d63031' : (product.stock || 0) < 10 ? '#ff6b6b' : '#27ae60'}}>{product.stock || 0}</td>
                 <td>{product.category}</td>
-                <td>{product.owner_username || '-'}</td>
+                <td>{product.owner_username || 'admin'}</td>
                 <td>
                   {product.owner_username === username || role === 'admin' ? (
                     <button onClick={() => handleEdit(product)} style={{background:"none",border:"none",cursor:"pointer",color:"blue"}}>Edit</button>

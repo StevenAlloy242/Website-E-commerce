@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import all_product from '../Components/Assets/all_product.jsx';
 import CartItem from '../Components/Cart/CartItem';
 import { useCart } from '../Context/CartContext';
 import { useAuth } from '../Context/AuthContext';
+import { getLocalImage } from '../utils/imageMapper';
+import axios from 'axios';
 
 function Cart() {
   const { cart, updateQty, removeFromCart, clearCart } = useCart();
@@ -12,13 +14,26 @@ function Cart() {
   const [checkoutError, setCheckoutError] = useState("");
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
-  const getAllProducts = () => {
+  const [allProducts, setAllProducts] = useState(() => {
     const localProducts = localStorage.getItem('products');
     const local = localProducts ? JSON.parse(localProducts) : [];
     return [...all_product, ...local];
-  };
+  });
 
-  const allProducts = getAllProducts();
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await axios.get('/api/products');
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          setAllProducts(res.data);
+        }
+      } catch (e) {
+        // fallback to local list already in state
+        console.debug('Failed to load products for cart mapping', e.message || e);
+      }
+    };
+    load();
+  }, []);
 
   const cartItems = cart.map(item => {
     const product = allProducts.find(p => p.id === item.productId);

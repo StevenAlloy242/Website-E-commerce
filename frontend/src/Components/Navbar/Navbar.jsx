@@ -40,11 +40,12 @@ const Navbar = () => {
         {isLoggedIn ? (
           <div className="user-info">
             <span>Welcome, {currentUser}</span>
-            {currentRole === 'admin' && (
-              <Link to="/admin-panel">
-                <button className="seller-btn">Seller Panel</button>
-              </Link>
-            )}
+            <Link to="/admin-panel">
+              <button className="seller-btn">Seller Panel</button>
+            </Link>
+            <Link to="/buyer-panel">
+              <button className="buyer-btn">Buyer Panel</button>
+            </Link>
             <button onClick={handleLogout} className="logout-btn">Logout</button>
           </div>
         ) : (

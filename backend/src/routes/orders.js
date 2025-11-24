@@ -4,7 +4,7 @@ import { verifyToken } from '../middleware/auth.js';
 
 const router = Router();
 
-// POST /api/orders -> create order & deduct balance
+// POST /api/orders -> create order & deduct balance & reduce stock
 router.post('/', verifyToken, async (req, res) => {
   const { items, total } = req.body;
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -24,6 +24,23 @@ router.post('/', verifyToken, async (req, res) => {
     
     if (userBalance < orderTotal) {
       return res.status(400).json({ message: 'Insufficient balance', currentBalance: userBalance, required: orderTotal });
+    }
+
+    // Check and reduce stock for each item
+    for (const item of items) {
+      const [productRows] = await pool.query('SELECT id, stock, name FROM products WHERE id = ?', [item.productId]);
+      if (productRows.length === 0) {
+        return res.status(404).json({ message: `Produk dengan ID ${item.productId} tidak ditemukan` });
+      }
+      const productRow = productRows[0];
+      const currentStock = Number(productRow.stock || 0);
+      const itemQty = Number(item.qty || 1);
+      if (currentStock < itemQty) {
+        const displayName = productRow.name || `Product #${productRow.id}`;
+        return res.status(400).json({ message: `Stok untuk "${displayName}" tidak cukup (tersisa: ${currentStock})` });
+      }
+      // Reduce stock
+      await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [itemQty, item.productId]);
     }
 
     // Deduct balance
@@ -55,6 +72,84 @@ router.get('/', verifyToken, async (req, res) => {
     res.json(rows);
   } catch (err) {
     res.status(500).json({ message: 'Gagal mengambil orders', error: err.message });
+  }
+});
+
+// GET /api/orders/all -> admin: list all orders
+router.get('/all', verifyToken, async (req, res) => {
+  if (req.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+  try {
+    const [rows] = await pool.query('SELECT o.id, o.user_id, u.username, o.total_amount, o.items_json, o.status, o.created_at FROM orders o JOIN users u ON u.id = o.user_id ORDER BY o.created_at DESC');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal mengambil semua orders', error: err.message });
+  }
+});
+
+// PATCH /api/orders/:id/status -> admin updates order status and notify buyer
+router.patch('/:id/status', verifyToken, async (req, res) => {
+  if (req.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+  const orderId = req.params.id;
+  const { status } = req.body;
+  if (!status) return res.status(400).json({ message: 'Status required' });
+  try {
+    // Update order status
+    await pool.query('UPDATE orders SET status = ? WHERE id = ?', [status, orderId]);
+    // Get order owner
+    const [ordRows] = await pool.query('SELECT user_id FROM orders WHERE id = ?', [orderId]);
+    if (ordRows.length === 0) return res.status(404).json({ message: 'Order not found' });
+    const userId = ordRows[0].user_id;
+
+    // Create notification for user
+    const note = { type: 'order_status', orderId: Number(orderId), status, message: `Order #${orderId} status updated to ${status}`, created_at: new Date() };
+    // Fetch existing notifications
+    const [uRows] = await pool.query('SELECT notifications FROM users WHERE id = ?', [userId]);
+    let notesArr = [];
+    if (uRows.length > 0 && uRows[0].notifications) {
+      try { notesArr = JSON.parse(uRows[0].notifications); } catch (e) { notesArr = []; }
+    }
+    notesArr.unshift(note);
+    await pool.query('UPDATE users SET notifications = ? WHERE id = ?', [JSON.stringify(notesArr), userId]);
+
+    res.json({ message: 'Order status updated' });
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal mengubah status order', error: err.message });
+  }
+});
+
+// POST /api/orders/:id/cancel -> buyer cancels their order
+router.post('/:id/cancel', verifyToken, async (req, res) => {
+  const orderId = req.params.id;
+  try {
+    // Check if order belongs to current user and is still cancellable
+    const [ordRows] = await pool.query('SELECT user_id, status, total_amount FROM orders WHERE id = ?', [orderId]);
+    if (ordRows.length === 0) return res.status(404).json({ message: 'Order not found' });
+    const order = ordRows[0];
+    if (order.user_id !== req.userId) return res.status(403).json({ message: 'Forbidden' });
+    // Only allow cancel if status is shipped or delivered
+    if (order.status !== 'shipped' && order.status !== 'delivered') {
+      return res.status(400).json({ message: 'Cannot cancel order with status: ' + order.status });
+    }
+
+    // Update order status to cancelled
+    await pool.query('UPDATE orders SET status = ? WHERE id = ?', ['cancelled', orderId]);
+
+    // Refund balance to user
+    await pool.query('UPDATE users SET balance = balance + ? WHERE id = ?', [order.total_amount, req.userId]);
+
+    // Create notification
+    const note = { type: 'order_cancelled', orderId: Number(orderId), message: `Order #${orderId} cancelled. ${order.total_amount} refunded.`, created_at: new Date() };
+    const [uRows] = await pool.query('SELECT notifications FROM users WHERE id = ?', [req.userId]);
+    let notesArr = [];
+    if (uRows.length > 0 && uRows[0].notifications) {
+      try { notesArr = JSON.parse(uRows[0].notifications); } catch (e) { notesArr = []; }
+    }
+    notesArr.unshift(note);
+    await pool.query('UPDATE users SET notifications = ? WHERE id = ?', [JSON.stringify(notesArr), req.userId]);
+
+    res.json({ message: 'Order cancelled and balance refunded' });
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal membatalkan order', error: err.message });
   }
 });
 

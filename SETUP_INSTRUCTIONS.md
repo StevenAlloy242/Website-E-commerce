@@ -54,6 +54,40 @@
 
 5. Tunggu sampai keluar: `Server running on http://localhost:5000`
 
+### 4.1 (Opsional) Menjalankan migration Node untuk kolom `cart` atau tabel `orders`
+
+Jika kamu melihat error terkait tabel `orders` tidak ada atau ingin menambahkan kolom `cart` pada tabel `users`, ada dua cara:
+
+- Cara cepat dengan skrip Node (sudah tersedia di folder `backend`):
+
+```powershell
+cd c:\Users\USER\OneDrive\Documents\GitHub\Website-E-commerce\backend
+# Install dependency yang diperlukan untuk migration
+npm install mysql2 dotenv
+
+# Pastikan file .env ada (lihat langkah di atas). Lalu jalankan migration:
+node migrate-add-cart.js
+node migrate-create-orders.js
+```
+
+- Cara manual (via phpMyAdmin atau MySQL CLI): jalankan SQL berikut jika kamu tidak ingin menjalankan migration script:
+
+```sql
+ALTER TABLE users ADD COLUMN cart LONGTEXT NULL;
+
+CREATE TABLE IF NOT EXISTS orders (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   user_id INT NOT NULL,
+   total_amount DECIMAL(10,2) NOT NULL,
+   items_json LONGTEXT,
+   status VARCHAR(50) DEFAULT 'completed',
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+Setelah migration atau SQL dijalankan, restart backend jika sudah berjalan.
+
 ## 5. Setup Frontend
 
 1. Buka terminal baru di folder `frontend`
